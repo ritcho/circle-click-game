@@ -6,11 +6,15 @@
 
 
 
-var score = 0;
+var score = 1;
+var start = true;
 var pressed = false;
-var cX = 50;
-var cY = 80;
+var cOnScreen = true; 
+var cX = Math.floor((Math.random()*200)+1);
+var cY = Math.floor((Math.random()*200)+1);
 var cD = 80;
+var timeUP = false; 
+
 
 function setup() {
   // put setup code here
@@ -20,27 +24,52 @@ function setup() {
 function draw() {
   // put drawing code here
 
+ if (start == true){
+ player.circle(cX, cY, cD, cD);
+ start = false;
+ }
+
+
  // if mouse is in circle
  if (inCircle(mouseX, mouseY, cX, cY, cD)) {
      
   // and mouse is released
-  if (pressed == true){
+  if (pressed == true && cOnScreen == true){
 
   // add 1 to your score
   score++; 
-  console.log(score);
+  console.log("Your Score is " + score);
   pressed = false;
   }
 
   } 
 
-  
+  else { pressed = false;}
 
 
-else { pressed = false;}
+// a random check to remove circle
+// add timer to check time gone
+if (score % 5 == 0){
 
-player(cX, cY, cD, cD);
+	// kill inside loop is causing issues...
+	player.kill();
+	// nolonger visable 
+	cOnScreen = false;   
+	
+}
 
+
+if (timeUP == true){
+
+	player.circle(cX, cY, cD, cD);
+	cOnScreen = true;
+	timeUP = false; 
+}
+
+
+
+// END OF DRAW
+} // DRAW // ----------- //// 
 
 
 
@@ -57,12 +86,8 @@ function inCircle(mx, my, cx, cy, circleDia ) {
 } // function inCircle
 
 
-if (score > 5){
 
-	clear(); 
-}
 
-} // draw 
 
 
 
@@ -73,22 +98,36 @@ if (score > 5){
  }
 
 
-function player(x,y,a,b){
-
-	fill(204, 102, 0);
-	ellipse(x,y,a,b); 
-}
 
 
-// Timer to give you 15seconds to draw - then restart is called
+
+// Timer to give you 3sec
 function playTimer(){
 
-  TimersJS.oneShot(15000, function() {
-    console.log("This is called when the timeout is complete");
-    restart();
+  TimersJS.oneShot(3000, function() {
+    console.log("Time Up");
+    timeUP = true; 
+
 });  
 
 }
 
 
+
+
+
+var player = {
+
+	circle: function(x,y,a,b){ 
+		fill(204,102,0); 
+		ellipse(x,y,a,b);
+	},
+
+	kill: function(){
+		clear(player.circle);
+		playTimer(); 
+	}
+
+
+} // player 
 
