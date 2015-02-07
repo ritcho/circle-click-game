@@ -1,19 +1,14 @@
-// make player a class / then create instance 
-// player is a different circle each time
-// add / remove the circle 
-// click / touch circle until it finally disappears (amount is random)
-// player disappears and reappears in dif spots on canvas  
+// SIMPLE CLICK CIRCLE FOR POINTS GAME 
 
 
 
-var score = 1;
-var start = true;
+var score = 0;
+var start = true; 
 var pressed = false;
 var cOnScreen = true; 
-var cX = Math.floor((Math.random()*200)+1);
-var cY = Math.floor((Math.random()*200)+1);
 var cD = 80;
-var timeUP = false; 
+var dX;
+var dY;
 
 
 function setup() {
@@ -22,16 +17,27 @@ function setup() {
 }
 
 function draw() {
-  // put drawing code here
-
+  
+ // runs start
  if (start == true){
+
+ var cX = Math.floor((Math.random()*200)+1);
+ var cY = Math.floor((Math.random()*200)+1);
+
  player.circle(cX, cY, cD, cD);
+ // run function to begin logic 
+ cAppear(); 
  start = false;
- }
+ // set vars equal to check within circle
+ dX = cX;
+ dY = cY;
+
+} // start
+ 
 
 
  // if mouse is in circle
- if (inCircle(mouseX, mouseY, cX, cY, cD)) {
+ if (inCircle(mouseX, mouseY, dX, dY, cD)) {
      
   // and mouse is released
   if (pressed == true && cOnScreen == true){
@@ -45,27 +51,6 @@ function draw() {
   } 
 
   else { pressed = false;}
-
-
-// a random check to remove circle
-// add timer to check time gone
-if (score % 5 == 0){
-
-	// kill inside loop is causing issues...
-	player.kill();
-	// nolonger visable 
-	cOnScreen = false;   
-	
-}
-
-
-if (timeUP == true){
-
-	player.circle(cX, cY, cD, cD);
-	cOnScreen = true;
-	timeUP = false; 
-}
-
 
 
 // END OF DRAW
@@ -87,10 +72,6 @@ function inCircle(mx, my, cx, cy, circleDia ) {
 
 
 
-
-
-
-
  function mouseReleased() {
  
  pressed = true;
@@ -98,36 +79,60 @@ function inCircle(mx, my, cx, cy, circleDia ) {
  }
 
 
+// Circle Spawn - after x seconds player spawned 
+function cSpawned(){
 
+  	TimersJS.oneShot(Math.floor((Math.random()*5000)+1), function() {
+    console.log("spawning");
+    start = true;
+    //cAppear(); // spawn player 
+    
 
+});
 
-// Timer to give you 3sec
-function playTimer(){
+}
 
-  TimersJS.oneShot(3000, function() {
-    console.log("Time Up");
-    timeUP = true; 
+// Circle Disappears - after x seconds player killed 
+function cDisappear(){
 
-});  
+	// var to suggest kill has been activated
+
+  	TimersJS.oneShot(500, function() {
+    console.log("circle is killed..");
+    clear(player.circle); // kill player
+    cOnScreen = false; // player not on screen 
+    cSpawned(); // call the spawn.
+    
+
+});
 
 }
 
 
 
+// Circle Appears - after x seconds player is spawned 
+function cAppear(){
 
+	//player.circle(cX, cY, cD, cD); // draw the cirlce
+	cOnScreen = true; // player on screen
+
+  	TimersJS.oneShot(Math.floor((Math.random()*5000)+1), function() {
+  	console.log("cDisappear called"); 
+    cDisappear(); // call the kill function
+    
+
+});
+
+}
 
 var player = {
 
 	circle: function(x,y,a,b){ 
 		fill(204,102,0); 
 		ellipse(x,y,a,b);
-	},
-
-	kill: function(){
-		clear(player.circle);
-		playTimer(); 
 	}
 
 
 } // player 
+
 
